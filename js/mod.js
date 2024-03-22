@@ -1,14 +1,14 @@
 let modInfo = {
 	name: "The Point Tree",
 	id: "pointtreeincrementalgame",
-	author: "nobody",
+	author: "lucas",
 	pointsName: "points",
 	modFiles: ["layers.js", "tree.js"],
 
 	discordName: "",
 	discordLink: "",
 	initialStartPoints: new Decimal (10), // Used for hard resets and new players
-	offlineLimit: 1,  // In hours
+	offlineLimit: 0,  // In hours
 }
 
 // Set your version in num and name
@@ -19,8 +19,8 @@ let VERSION = {
 
 let changelog = `<h1>Changelog:</h1><br>
 	<h3>v0.0</h3><br>
-		- Added things.<br>
-		- Added stuff.`
+		- Added points.<br>
+		- Added enhance points.`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -43,6 +43,11 @@ function getPointGen() {
 		return new Decimal(0)
 
 	let gain = new Decimal(1)
+
+	if (hasUpgrade('e', 11)) gain = gain.times(2) // If they have upgrade 11 then they get double
+
+	if (hasUpgrade('e', 12)) gain = gain.times(upgradeEffect('e', 12))
+
 	return gain
 }
 
