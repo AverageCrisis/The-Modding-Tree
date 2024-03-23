@@ -13,11 +13,18 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0",
-	name: "Literally nothing",
+	num: "0.1",
+	name: "Things",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<br>
+	<h3>v0.1</h3><br>
+		- Added rebirth points.<br>
+		- Added quarks.<br>
+		- Added 3 Supremacy Milestones<br>
+		<br>
+		<br>
 	<h3>v0.0</h3><br>
 		- Added points.<br>
 		- Added enhance points.`
@@ -46,7 +53,57 @@ function getPointGen() {
 
 	if (hasUpgrade('e', 11)) gain = gain.times(2) // If they have upgrade 11 then they get double
 
-	if (hasUpgrade('e', 12)) gain = gain.times(upgradeEffect('e', 12))
+	if (hasUpgrade('e', 12)) {
+		
+		gain = gain.times(upgradeEffect('e', 12))
+		
+	}
+	
+
+	if (hasUpgrade('e', 14)) gain = gain.times(upgradeEffect('e', 14))
+
+	if (hasUpgrade('e', 17)) gain = gain.pow(1.02)
+
+	if (hasUpgrade('e', 18)) gain = gain.times(2)
+
+	
+	let thiseffect = new Decimal(1)
+
+	if (hasMilestone('r', 6)) {
+		thiseffect = player.r.points.add(1).pow(.65)
+	} else {
+		if (hasMilestone('r', 0)) thiseffect = player.r.points.add(1).pow(.6)
+	}
+
+	if (thiseffect.gte(100000)) {
+		if(hasUpgrade('q', 19)) {
+			thiseffect = thiseffect.sub(100000).pow(.6).add(100000)
+		} else { 
+			thiseffect = thiseffect.sub(100000).pow(.5).add(100000)
+		}
+	}
+
+	gain = gain.times(thiseffect)
+
+	if (hasUpgrade('e', 22)) gain = gain.times(10)
+
+	if (hasUpgrade('q', 11)) gain = gain.times(5)
+	
+	let e2 = new Decimal(1)
+
+	if (hasMilestone('q', 4)) e2 = player.q.points.add(1).pow(.6)
+	if (hasUpgrade('q', 15)) e2 = player.q.points.add(1).pow(.8)
+
+	if (e2.gte(new Decimal(1e8))) {
+		e2 = e2.sub(new Decimal(1e8)).pow(.5).add(new Decimal(1e8))
+	}
+
+	gain = gain.times(e2)
+
+	if (hasUpgrade('q', 14)) gain = gain.times(10000)
+
+	gain = gain.times(buyableEffect('q', 11))
+	gain = gain.pow(buyableEffect('q', 14))
 
 	return gain
 }
