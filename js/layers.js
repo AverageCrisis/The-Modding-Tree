@@ -78,7 +78,15 @@ addLayer("p", {
             cost: new Decimal(5),
 
             effect() {
-                return player[this.layer].points.add(2).pow(.05).add(5).log(10).add(0.5)
+                let eff = player[this.layer].points.add(500).log(400)
+                let dec = new Decimal(2)
+                if (eff.gte(dec)) {
+                    eff = eff.sub(dec)
+                    eff = eff.pow(.01).sub(1)
+                    eff = eff.add(dec)
+                }
+
+                return eff
             },
             effectDisplay() { return '^'+format(upgradeEffect(this.layer, this.id))}
         },
@@ -91,7 +99,7 @@ addLayer("p", {
 
 
             effect() {
-                return player.points.add(1).pow(0.2)
+                return player.points.add(5).log(3)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" }
         },
@@ -107,27 +115,45 @@ addLayer("p", {
         15: {
             title: "Prestiged Exponential",
             description: "Raise Prestige Point gain based on points.",
-            cost: new Decimal(1000),
+            cost: new Decimal(250),
             
 
 
             effect() {
-                return player.points.add(5100).log(2500).pow(.25)
+                return player.points.add(5100).log(2500).pow(.4)
             },
             effectDisplay() { return "^"+format(upgradeEffect(this.layer, this.id)) }
         },
 
         16: {
-            title: "Prestiged Exponential",
-            description: "Raise Prestige Point gain based on points.",
-            cost: new Decimal(1000),
+            title: "Prestige Buyable",
+            description: "Unlock a buyable.",
+            cost: new Decimal(300),
             
-
-
-            effect() {
-                return player.points.add(5100).log(2500)
-            },
-            effectDisplay() { return "^"+format(upgradeEffect(this.layer, this.id)) }
+            
         },
     },
+
+    buyables: {
+        11: {
+            cost(x) { return new Decimal(100).mul(new Decimal(5).pow(x))},
+            title: 'More Points',
+            display() { return "x1.5 points compounding per upgrade. Cost: "+format(this.cost())+' Purchased: '+format(getBuyableAmount(this.layer, this.id)) },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            effect(x) {
+                return new Decimal(1.5).pow(x)
+            },
+            unlocked() {
+                if (hasUpgrade('p', 16)) {
+                    return true
+                }
+                return false
+            },
+        },
+        
+    }
 })
